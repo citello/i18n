@@ -13,15 +13,16 @@ func TestTranslate(t *testing.T) {
 		value    string
 		language string
 		expected string
+		params   interface{}
 	}{
-		{"Hello World", "", "Hello World"},
-		{"Hello World", "it", "Ciao Mondo"},
-		{"Hello World", "es", "Hola Mundo"},
-		{"Hello Gopher", "", "Hello Gopher"},
+		{"Hello World", "", "Hello World", ""},
+		{"Hello World", "it", "Ciao Mondo", ""},
+		{"Hello World", "es", "Hola Mundo", ""},
+		{"Hello Gopher", "", "Hello Gopher", ""},
 	}
 	for _, test := range tests {
 		i18n := New(test.language)
-		res := i18n.Print(test.value)
+		res := i18n.Print(test.value, test.params)
 		if res != test.expected {
 			t.Errorf("%s, expected %v, got %v", test.value, test.expected, res)
 		}
@@ -36,21 +37,22 @@ func TestPlural(t *testing.T) {
 	t.Parallel()
 
 	var tests = []struct {
-		value    int
-		language string
-		zero     string
-		one      string
-		many     string
-		expected string
+		value      int
+		language   string
+		zero       string
+		one        string
+		many       string
+		expected   string
+		customLang string
 	}{
-		{-1, "", "no records found.", "one record found.", "%d records found.", "no records found."},
-		{0, "it", "no records found.", "one record found.", "%d records found.", "no records found."},
-		{1, "es", "no records found.", "one record found.", "%d records found.", "one record found."},
-		{2, "en", "no records found.", "one record found.", "%d records found.", "2 records found."},
+		{-1, "", "no records found.", "one record found.", "%d records found.", "no records found.", ""},
+		{0, "it", "no records found.", "one record found.", "%d records found.", "no records found.", "it"},
+		{1, "es", "no records found.", "one record found.", "%d records found.", "one record found.", "es"},
+		{2, "en", "no records found.", "one record found.", "%d records found.", "2 records found.", "en"},
 	}
 	for _, test := range tests {
 		i18n := New(test.language)
-		res := i18n.Plural(test.value, test.zero, test.one, test.many)
+		res := i18n.Plural(test.value, test.zero, test.one, test.many, test.customLang)
 		if res != test.expected {
 			t.Errorf("%d, expected %v, got %v", test.value, test.expected, res)
 		}
